@@ -9,4 +9,3 @@ export default class Post extends Model {
   @text('body') body;
   @field('is_pinned') isPinned;
 }
-
