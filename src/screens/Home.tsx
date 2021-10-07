@@ -26,8 +26,12 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import {database} from '../database';
 import {synchronize, SyncPullArgs} from '@nozbe/watermelondb/sync';
+import {useDatabase} from '@nozbe/watermelondb/hooks';
+import {withDatabase} from '@nozbe/watermelondb/DatabaseProvider';
+import {compose} from 'recompose';
+import { useGlobal } from '../provider/useGlobal';
+import { Divider } from 'native-base';
 
 const Section = ({post}): any => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -49,7 +53,8 @@ const Section = ({post}): any => {
   );
 };
 
-const HomeScreen: () => Node = () => {
+const HomeScreen = () => {
+  const database = useDatabase();
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -105,6 +110,12 @@ const HomeScreen: () => Node = () => {
     });
   };
 
+  const {setReRenderNavigation} = useGlobal();
+  const logout = async () => {
+    await database.adapter.removeLocal('isLogin');
+    setReRenderNavigation(true);
+  };
+
   // const data = database.collections.get('posts').query().collection;
   // console.log(data);
   return (
@@ -116,6 +127,7 @@ const HomeScreen: () => Node = () => {
         <Header />
         <Button onPress={addData} title="Add Data" />
         <Button onPress={sync} title="Sync" />
+        <Button onPress={logout} title="Logout" />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,

@@ -1,17 +1,52 @@
+import {useDatabase} from '@nozbe/watermelondb/hooks';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
-import HomeTabs from './HomeTabs';
+import {Center, Spinner, VStack} from 'native-base';
+import React, {useEffect, useState} from 'react';
+import {useGlobal} from '../provider/useGlobal';
+import Login from '../screens/Login';
+import HomeTabs from './AuthTabs';
 
 const Stack = createNativeStackNavigator();
 
-export default function RootNavigator() {
+const RootNavigator = () => {
+  const {reRenderNavigation,setReRenderNavigation} = useGlobal();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
+  const database = useDatabase();
+
+  const checkIsLogin = async () => {
+    const loginStatus = await database.adapter.getLocal('isLogin');
+    setIsLogin(loginStatus ? true : false);
+    setIsLoading(false);
+    setReRenderNavigation(false)
+  };
+
+  useEffect(() => {
+    if (reRenderNavigation) checkIsLogin();
+  }, [reRenderNavigation]);
+
+  if (isLoading) {
+    return (
+      <Center flex={1} px="3">
+        <VStack space={4} alignItems="center">
+          <Spinner color="emerald.500" size="lg" />
+        </VStack>
+      </Center>
+    );
+  }
+
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      key="homeNavigator"
+      initialRouteName="Tunnel"
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="Home" component={HomeTabs} />
+      {isLogin ? (
+        <Stack.Screen name="AuthLayout" component={HomeTabs} />
+      ) : (
+        <Stack.Screen name="Login" component={Login} />
+      )}
       {/* <Stack.Screen name='SearchResult' component={SearchResultScreen} />
       <Stack.Screen name='About' component={AboutScreen} options={{ headerShown: true, headerTitle: 'About Us' }} />
       <Stack.Screen name='ContactUs' component={ContactUsScreen} options={{ headerShown: true, headerTitle: 'Contact Us' }} />
@@ -26,4 +61,6 @@ export default function RootNavigator() {
       /> */}
     </Stack.Navigator>
   );
-}
+};
+
+export default RootNavigator;
