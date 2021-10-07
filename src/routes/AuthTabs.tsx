@@ -1,20 +1,21 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Box, useTheme} from 'native-base';
 import React from 'react';
-import { Settings } from 'react-native';
+import {Settings} from 'react-native';
 import HomeIcon from '../assets/icon/HomeIcon';
 import SettingsIcon from '../assets/icon/SettingsIcon';
 import StockIcon from '../assets/icon/StockIcon';
 import TransactionIcon from '../assets/icon/TransactionIcon';
 import HomeScreen from '../screens/Home';
 import SettingsScreen from '../screens/Settings';
+import StockScreen from '../screens/Stock/Stock';
 
 const Tab = createBottomTabNavigator();
 
 export default function RootNavigator() {
   const {colors} = useTheme();
   return (
-    <Tab.Navigator>
+    <Tab.Navigator initialRouteName="Stock">
       <Tab.Screen
         key="dashboard"
         name="Dashboard"
@@ -65,7 +66,7 @@ export default function RootNavigator() {
       <Tab.Screen
         key="stock"
         name="Stock"
-        component={HomeScreen}
+        component={StockScreen}
         options={{
           tabBarActiveTintColor: colors.primary[400],
           tabBarIcon: ({focused, color, size}) => {

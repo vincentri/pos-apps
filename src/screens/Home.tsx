@@ -110,12 +110,6 @@ const HomeScreen = () => {
     });
   };
 
-  const {setReRenderNavigation} = useGlobal();
-  const logout = async () => {
-    await database.adapter.removeLocal('isLogin');
-    setReRenderNavigation(true);
-  };
-
   // const data = database.collections.get('posts').query().collection;
   // console.log(data);
   return (
@@ -127,7 +121,6 @@ const HomeScreen = () => {
         <Header />
         <Button onPress={addData} title="Add Data" />
         <Button onPress={sync} title="Sync" />
-        <Button onPress={logout} title="Logout" />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
